@@ -1,0 +1,119 @@
+<title>Medieval Arena</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IM+Fell+English+SC&display=swap">
+<link rel="stylesheet" href="src/styles/main.css"><!--STYLE-->
+
+<div id="app">
+  <canvas id="view" aria-label="Arena view"></canvas>
+
+  <div id="hud" hidden>
+    <div id="vignette"></div>
+    <canvas id="compass" width="120" height="120"></canvas>
+    <div id="readout" role="status"></div>
+    <div id="stamina" title="Stamina"><i></i></div>
+    <div id="self-wrap" class="fig"></div>
+    <div id="foe-wrap" class="fig"><span class="foe-name">Sir Odo Ravensworth</span><span id="foe-state"></span></div>
+    <div id="lock">Locked on · F</div>
+    <aside id="hints">
+      Flick mouse + <kbd>LMB</kbd> cut · still mouse + <kbd>LMB</kbd> thrust<br>
+      Hold <kbd>RMB</kbd> guard, move mouse to place it · tap to parry<br>
+      <kbd>Space</kbd> sidestep · <kbd>Shift</kbd> run · <kbd>F</kbd> lock-on · <kbd>H</kbd> hide · <kbd>Esc</kbd> pause
+    </aside>
+  </div>
+
+  <section id="menu" class="screen" hidden>
+    <div class="col">
+      <p class="kicker">A duel in plate harness</p>
+      <h1>Medieval Arena</h1>
+      <p class="lede">One ring of stone, one opponent, one greatsword. The steel has weight and the arms have limits. A guard holds only if the blades actually meet, and plate turns an edge unless you find the gaps.</p>
+      <div class="actions">
+        <button class="act primary" id="btn-start">Begin the duel</button>
+        <button class="act" id="btn-guide">How to fight</button>
+        <button class="act" id="btn-settings">Settings</button>
+      </div>
+      <dl class="spec">
+        <dt>Weapon</dt><dd>Two-handed sword, 2.6 kg, 168 cm overall</dd>
+        <dt>Balance</dt><dd>14 cm forward of the cross</dd>
+        <dt>Harness</dt><dd>Twenty armour zones, mail at every joint</dd>
+        <dt>Opponent</dt><dd>Sir Odo Ravensworth, in the red</dd>
+      </dl>
+      <p class="foot">Needs a mouse and keyboard. Click Begin to capture the mouse; <kbd>Esc</kbd> pauses.</p>
+    </div>
+  </section>
+
+  <section id="guide" class="screen" hidden>
+    <div class="col">
+      <p class="kicker">How to fight</p>
+      <h2>Weight, timing, gaps</h2>
+      <div class="guide">
+        <div><h3>Cutting</h3><p>Flick the mouse the way you want the blade to travel, then click. Down is an overhead, sideways is a horizontal cut, diagonals give descending and rising cuts. Click with the mouse still for a thrust. Hold the button to wind up harder: more force, more stamina, more time for him to read it.</p></div>
+        <div><h3>Guarding</h3><p>Hold right mouse and move the mouse to put your blade where the blow will land: towards the side it comes from, high for an overhead, low for a rising cut. Nothing is blocked unless the blades meet. Tap right mouse just before impact to parry, which throws his sword wide and gives you a fast counter.</p></div>
+        <div><h3>Armour</h3><p>Edges glance off good plate, though the blow still dents it and hurts the man inside. Cuts and thrusts bite at the neck, the armpits, the inside of the elbows and the backs of the knees, or through plate you have already battered.</p></div>
+        <dl class="keys">
+          <dt><kbd>W A S D</kbd></dt><dd>Move</dd>
+          <dt><kbd>Shift</kbd></dt><dd>Run (costs stamina)</dd>
+          <dt><kbd>Space</kbd></dt><dd>Sidestep or step back</dd>
+          <dt><kbd>F</kbd></dt><dd>Toggle lock-on</dd>
+          <dt><kbd>Wheel</kbd></dt><dd>Camera distance</dd>
+          <dt><kbd>Esc</kbd></dt><dd>Pause</dd>
+        </dl>
+      </div>
+      <div class="actions"><button class="act" data-back>Back</button></div>
+    </div>
+  </section>
+
+  <section id="settings" class="screen" hidden>
+    <div class="col">
+      <p class="kicker">Settings</p>
+      <h2>Arming</h2>
+      <div class="form">
+        <label for="s-sens">Mouse sensitivity</label><div class="range"><input id="s-sens" type="range" min="0.3" max="2.5" step="0.05"><output for="s-sens"></output></div>
+        <label for="s-invert">Mouse</label><label class="check"><input id="s-invert" type="checkbox"> Invert vertical</label>
+        <label for="s-lock">Camera</label><label class="check"><input id="s-lock" type="checkbox"> Lock on to opponent</label>
+        <label for="s-diff">Opponent</label><select id="s-diff"><option value="0.5">Squire</option><option value="0.72">Knight</option><option value="0.9">Champion</option></select>
+        <label for="s-gore">Gore</label><select id="s-gore"><option value="full">Full</option><option value="reduced">Reduced</option><option value="off">Off</option></select>
+        <label for="s-shadows">Shadows</label><select id="s-shadows"><option value="high">High</option><option value="low">Low</option><option value="off">Off</option></select>
+        <label for="s-res">Resolution</label><select id="s-res"><option value="1">Full</option><option value="0.75">75%</option><option value="0.5">50%</option></select>
+        <label for="s-vol">Volume</label><div class="range"><input id="s-vol" type="range" min="0" max="1" step="0.05"><output for="s-vol"></output></div>
+        <label for="s-amb">Crowd and wind</label><div class="range"><input id="s-amb" type="range" min="0" max="1" step="0.05"><output for="s-amb"></output></div>
+      </div>
+      <div class="actions"><button class="act" data-back>Back</button></div>
+    </div>
+  </section>
+
+  <section id="pause" class="screen dim" hidden>
+    <div class="col">
+      <p class="kicker">Paused</p>
+      <h2>Hold</h2>
+      <div class="actions">
+        <button class="act primary" id="btn-resume">Resume</button>
+        <button class="act" id="btn-restart">Restart the duel</button>
+        <button class="act" id="btn-p-settings">Settings</button>
+        <button class="act" id="btn-quit">Leave the arena</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="screen" hidden>
+    <div class="col">
+      <p class="kicker" id="r-time"></p>
+      <h2 class="verdict" id="r-verdict"></h2>
+      <p class="cause" id="r-cause"></p>
+      <table class="tally">
+        <thead><tr><th></th><th>You</th><th>Sir Odo</th></tr></thead>
+        <tbody id="r-body"></tbody>
+      </table>
+      <div class="actions">
+        <button class="act primary" id="btn-again">Fight again</button>
+        <button class="act" id="btn-r-menu">Main menu</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="boot">Lighting the braziers…</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script type="module" src="src/main.js"></script><!--SCRIPT-->
