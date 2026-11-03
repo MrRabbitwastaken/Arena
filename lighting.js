@@ -2,13 +2,13 @@ import { THREE } from '../core/three.js';
 
 // Low evening sun, cool sky fill, and a small environment map so plate reads as steel.
 export function setupLighting(renderer, scene) {
-  scene.fog = new THREE.FogExp2(0x1c1716, 0.018);
-  scene.background = new THREE.Color(0x16121a);
+  scene.fog = new THREE.FogExp2(0x4a3a30, 0.006);
+  scene.background = new THREE.Color(0x2a2230);
 
-  const hemi = new THREE.HemisphereLight(0x7f8db0, 0x3a2a1c, 0.42);
+  const hemi = new THREE.HemisphereLight(0xb8c4e0, 0x6a5240, 1.1);
   scene.add(hemi);
 
-  const sun = new THREE.DirectionalLight(0xffc48a, 2.1);
+  const sun = new THREE.DirectionalLight(0xffd2a0, 3.2);
   sun.position.set(-14, 16, 9);
   sun.castShadow = true;
   const sc = sun.shadow.camera;
@@ -17,9 +17,11 @@ export function setupLighting(renderer, scene) {
   sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
   scene.add(sun); scene.add(sun.target);
 
-  const rim = new THREE.DirectionalLight(0x8fa6d6, 0.55);
+  const rim = new THREE.DirectionalLight(0xa8bce6, 1.0);
   rim.position.set(12, 8, -14);
   scene.add(rim);
+  const amb = new THREE.AmbientLight(0xfff1e0, 0.35);
+  scene.add(amb);
 
   // Environment for reflections: dusk gradient with a warm horizon and a few bright windows.
   const env = new THREE.Scene();
@@ -27,9 +29,9 @@ export function setupLighting(renderer, scene) {
     side: THREE.BackSide,
     vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
     fragmentShader: `varying vec3 vP; void main(){ float h = vP.y;
-      vec3 c = mix(vec3(0.22,0.16,0.12), vec3(0.9,0.55,0.32), smoothstep(-0.2,0.05,h));
-      c = mix(c, vec3(0.16,0.18,0.26), smoothstep(0.05,0.5,h));
-      c = mix(c, vec3(0.05,0.06,0.1), smoothstep(0.5,1.0,h));
+      vec3 c = mix(vec3(0.45,0.36,0.28), vec3(1.2,0.85,0.55), smoothstep(-0.2,0.05,h));
+      c = mix(c, vec3(0.45,0.5,0.62), smoothstep(0.05,0.5,h));
+      c = mix(c, vec3(0.25,0.28,0.38), smoothstep(0.5,1.0,h));
       gl_FragColor = vec4(c,1.0); }`,
   });
   env.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), envMat));
@@ -44,5 +46,5 @@ export function setupLighting(renderer, scene) {
   scene.environment = pm.fromScene(env, 0.04).texture;
   pm.dispose();
 
-  return { sun, hemi, rim };
+  return { sun, hemi, rim, amb };
 }

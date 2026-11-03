@@ -199,6 +199,7 @@ kbd { font-family: var(--mono); font-size: 0.78rem; border: 1px solid var(--line
         <label for="s-diff">Opponent</label><select id="s-diff"><option value="0.5">Squire</option><option value="0.72">Knight</option><option value="0.9">Champion</option></select>
         <label for="s-gore">Gore</label><select id="s-gore"><option value="full">Full</option><option value="reduced">Reduced</option><option value="off">Off</option></select>
         <label for="s-shadows">Shadows</label><select id="s-shadows"><option value="high">High</option><option value="low">Low</option><option value="off">Off</option></select>
+        <label for="s-bright">Brightness</label><div class="range"><input id="s-bright" type="range" min="0.6" max="2" step="0.05"><output for="s-bright"></output></div>
         <label for="s-res">Resolution</label><select id="s-res"><option value="1">Full</option><option value="0.75">75%</option><option value="0.5">50%</option></select>
         <label for="s-vol">Volume</label><div class="range"><input id="s-vol" type="range" min="0" max="1" step="0.05"><output for="s-vol"></output></div>
         <label for="s-amb">Crowd and wind</label><div class="range"><input id="s-amb" type="range" min="0" max="1" step="0.05"><output for="s-amb"></output></div>
@@ -2161,7 +2162,7 @@ function canvas(w, h) { const c = document.createElement('canvas'); c.width = w;
 // Worn sandstone flags, drawn so the texture tiles.
 function floorTexture() {
   const S = 1024, [c, g] = canvas(S, S);
-  g.fillStyle = '#3d3933'; g.fillRect(0, 0, S, S);
+  g.fillStyle = '#5a5248'; g.fillRect(0, 0, S, S);
   const rows = []; let tot = 0;
   while (tot < S) { const h = rand(110, 190); rows.push(h); tot += h; }
   const k = S / tot; let y = 0;
@@ -2173,7 +2174,7 @@ function floorTexture() {
       const cw = cw0 * kc;
       for (const ox of [-S, 0]) {
         const X = ((x % S) + S) % S + ox;
-        const l = 33 + rand(-6, 7), hue = 30 + rand(-6, 8);
+        const l = 50 + rand(-7, 7), hue = 32 + rand(-6, 8);
         g.fillStyle = `hsl(${hue},${rand(7, 13)}%,${l}%)`;
         g.fillRect(X + 3, y + 3, cw - 6, rh - 6);
         const grd = g.createRadialGradient(X + cw / 2, y + rh / 2, 4, X + cw / 2, y + rh / 2, Math.max(cw, rh) * 0.7);
@@ -2201,12 +2202,12 @@ function floorTexture() {
 
 function wallTexture() {
   const W = 1024, H = 512, [c, g] = canvas(W, H);
-  g.fillStyle = '#2a2622'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#3e3832'; g.fillRect(0, 0, W, H);
   const course = H / 6;
   for (let r = 0; r < 6; r++) {
     let x = r % 2 ? -rand(40, 120) : 0;
     while (x < W) {
-      const w = rand(110, 210), l = 26 + rand(-5, 6);
+      const w = rand(110, 210), l = 40 + rand(-6, 6);
       g.fillStyle = `hsl(${28 + rand(-5, 5)},${rand(6, 12)}%,${l}%)`;
       g.fillRect(x + 3, r * course + 3, w - 6, course - 6);
       for (let i = 0; i < 40; i++) {
@@ -2249,7 +2250,7 @@ class Arena {
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), z = pos.getZ(i), r = Math.hypot(x, z) / ARENA_R;
       uv.setXY(i, x / 7.5, z / 7.5);
-      const v = 1 - Math.pow(Math.max(0, r - 0.55) / 0.45, 1.6) * 0.45 + rand(-0.03, 0.03);
+      const v = 1 - Math.pow(Math.max(0, r - 0.6) / 0.4, 1.6) * 0.25 + rand(-0.03, 0.03);
       col.push(v, v * 0.97, v * 0.93);
     }
     geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
@@ -2350,7 +2351,7 @@ class Arena {
       const bowl = new THREE.Mesh(bowlGeo, iron); bowl.position.y = 0.98; bowl.castShadow = true; g.add(bowl);
       const coals = new THREE.Mesh(new THREE.CircleGeometry(0.36, 16), new THREE.MeshBasicMaterial({ color: 0xff7a2a }));
       coals.rotation.x = -Math.PI / 2; coals.position.y = 1.19; g.add(coals);
-      const light = new THREE.PointLight(0xff9a4a, 2.2, 15, 2);
+      const light = new THREE.PointLight(0xff9a4a, 3, 18, 2);
       light.position.y = 1.7; g.add(light);
       this.group.add(g);
       this.braziers.push({ g, light, ph: rand(0, 10), top: new THREE.Vector3(g.position.x, 1.25, g.position.z) });
@@ -2364,7 +2365,7 @@ class Arena {
       vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
       fragmentShader: `varying vec3 vP; void main(){
         float h = clamp(vP.y, -0.1, 1.0);
-        vec3 horizon = vec3(0.42, 0.25, 0.16), mid = vec3(0.11, 0.1, 0.14), top = vec3(0.025, 0.03, 0.05);
+        vec3 horizon = vec3(0.75, 0.5, 0.34), mid = vec3(0.32, 0.3, 0.38), top = vec3(0.12, 0.14, 0.22);
         vec3 c = mix(horizon, mid, smoothstep(0.0, 0.25, h));
         c = mix(c, top, smoothstep(0.25, 0.9, h));
         gl_FragColor = vec4(c, 1.0); }`,
@@ -2377,7 +2378,7 @@ class Arena {
     this.time += dt;
     for (const b of this.braziers) {
       const f = Math.sin(this.time * 9 + b.ph) * 0.18 + Math.sin(this.time * 23 + b.ph * 2) * 0.12 + Math.random() * 0.12;
-      b.light.intensity = 2.0 + f;
+      b.light.intensity = 2.8 + f;
       if (fx && Math.random() < 0.9) fx.fire(b.top);
     }
     for (const b of this.banners) {
@@ -2410,13 +2411,13 @@ __m[18] = (function () {
 const { THREE } = __m[0];
 // Low evening sun, cool sky fill, and a small environment map so plate reads as steel.
 function setupLighting(renderer, scene) {
-  scene.fog = new THREE.FogExp2(0x1c1716, 0.018);
-  scene.background = new THREE.Color(0x16121a);
+  scene.fog = new THREE.FogExp2(0x4a3a30, 0.006);
+  scene.background = new THREE.Color(0x2a2230);
 
-  const hemi = new THREE.HemisphereLight(0x7f8db0, 0x3a2a1c, 0.42);
+  const hemi = new THREE.HemisphereLight(0xb8c4e0, 0x6a5240, 1.1);
   scene.add(hemi);
 
-  const sun = new THREE.DirectionalLight(0xffc48a, 2.1);
+  const sun = new THREE.DirectionalLight(0xffd2a0, 3.2);
   sun.position.set(-14, 16, 9);
   sun.castShadow = true;
   const sc = sun.shadow.camera;
@@ -2425,9 +2426,11 @@ function setupLighting(renderer, scene) {
   sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
   scene.add(sun); scene.add(sun.target);
 
-  const rim = new THREE.DirectionalLight(0x8fa6d6, 0.55);
+  const rim = new THREE.DirectionalLight(0xa8bce6, 1.0);
   rim.position.set(12, 8, -14);
   scene.add(rim);
+  const amb = new THREE.AmbientLight(0xfff1e0, 0.35);
+  scene.add(amb);
 
   // Environment for reflections: dusk gradient with a warm horizon and a few bright windows.
   const env = new THREE.Scene();
@@ -2435,9 +2438,9 @@ function setupLighting(renderer, scene) {
     side: THREE.BackSide,
     vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
     fragmentShader: `varying vec3 vP; void main(){ float h = vP.y;
-      vec3 c = mix(vec3(0.22,0.16,0.12), vec3(0.9,0.55,0.32), smoothstep(-0.2,0.05,h));
-      c = mix(c, vec3(0.16,0.18,0.26), smoothstep(0.05,0.5,h));
-      c = mix(c, vec3(0.05,0.06,0.1), smoothstep(0.5,1.0,h));
+      vec3 c = mix(vec3(0.45,0.36,0.28), vec3(1.2,0.85,0.55), smoothstep(-0.2,0.05,h));
+      c = mix(c, vec3(0.45,0.5,0.62), smoothstep(0.05,0.5,h));
+      c = mix(c, vec3(0.25,0.28,0.38), smoothstep(0.5,1.0,h));
       gl_FragColor = vec4(c,1.0); }`,
   });
   env.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), envMat));
@@ -2452,7 +2455,7 @@ function setupLighting(renderer, scene) {
   scene.environment = pm.fromScene(env, 0.04).texture;
   pm.dispose();
 
-  return { sun, hemi, rim };
+  return { sun, hemi, rim, amb };
 }
 
 return { setupLighting };
@@ -3252,7 +3255,7 @@ class Game {
     this.canvas = canvas; this.settings = settings; this.ui = ui;
     const r = this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     r.outputEncoding = THREE.sRGBEncoding;
-    r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+    r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.3;
     r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(62, 1, 0.05, 400);
@@ -3291,6 +3294,7 @@ class Game {
   applySettings() {
     const s = this.settings;
     this.fx.gore = s.gore;
+    this.renderer.toneMappingExposure = 1.3 * s.brightness;
     const sh = s.shadows;
     this.renderer.shadowMap.enabled = sh !== 'off';
     const size = sh === 'high' ? 2048 : 1024;
@@ -3491,7 +3495,7 @@ const KEY = 'medieval-arena-settings';
 const DEFAULTS = {
   sensitivity: 1, invertY: false, lockOn: true,
   gore: 'full', shadows: 'high', resolution: 1,
-  volume: 0.8, ambience: 0.5, difficulty: 0.72, hints: true,
+  brightness: 1, volume: 0.8, ambience: 0.5, difficulty: 0.72, hints: true,
 };
 
 function loadSettings() {
@@ -3583,6 +3587,7 @@ class Menus {
     bind('#s-gore', 'gore', (e) => e.value);
     bind('#s-shadows', 'shadows', (e) => e.value);
     bind('#s-res', 'resolution', (e) => +e.value);
+    bind('#s-bright', 'brightness', (e) => +e.value, 'input');
     bind('#s-vol', 'volume', (e) => +e.value, 'input');
     bind('#s-amb', 'ambience', (e) => +e.value, 'input');
     this.syncForm();
@@ -3594,6 +3599,7 @@ class Menus {
     $('#s-invert').checked = s.invertY; $('#s-lock').checked = s.lockOn;
     $('#s-diff').value = String(s.difficulty); $('#s-gore').value = s.gore; $('#s-shadows').value = s.shadows;
     $('#s-res').value = String(s.resolution);
+    $('#s-bright').value = s.brightness; $('#s-bright').nextElementSibling.textContent = Math.round(s.brightness * 100) + '%';
     $('#s-vol').value = s.volume; $('#s-vol').nextElementSibling.textContent = Math.round(s.volume * 100) + '%';
     $('#s-amb').value = s.ambience; $('#s-amb').nextElementSibling.textContent = Math.round(s.ambience * 100) + '%';
   }
@@ -3607,6 +3613,13 @@ const { THREE } = __m[0];
 const { Game } = __m[24];
 const { Menus } = __m[26];
 const { loadSettings } = __m[25];
+function showError(msg) {
+  const el = document.getElementById('boot');
+  el.hidden = false; el.classList.add('err');
+  el.textContent = 'Something went wrong while running the arena: ' + msg;
+}
+addEventListener('error', (e) => showError(e.message || String(e.error)));
+
 function boot() {
   const bootEl = document.getElementById('boot');
   if (!THREE) { bootEl.textContent = 'Three.js did not load. Check your connection and reload.'; bootEl.classList.add('err'); return; }

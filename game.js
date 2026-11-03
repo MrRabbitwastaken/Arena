@@ -19,7 +19,7 @@ export class Game {
     this.canvas = canvas; this.settings = settings; this.ui = ui;
     const r = this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     r.outputEncoding = THREE.sRGBEncoding;
-    r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+    r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.3;
     r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(62, 1, 0.05, 400);
@@ -58,6 +58,7 @@ export class Game {
   applySettings() {
     const s = this.settings;
     this.fx.gore = s.gore;
+    this.renderer.toneMappingExposure = 1.3 * s.brightness;
     const sh = s.shadows;
     this.renderer.shadowMap.enabled = sh !== 'off';
     const size = sh === 'high' ? 2048 : 1024;

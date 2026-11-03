@@ -2,7 +2,7 @@ const KEY = 'medieval-arena-settings';
 export const DEFAULTS = {
   sensitivity: 1, invertY: false, lockOn: true,
   gore: 'full', shadows: 'high', resolution: 1,
-  volume: 0.8, ambience: 0.5, difficulty: 0.72, hints: true,
+  brightness: 1, volume: 0.8, ambience: 0.5, difficulty: 0.72, hints: true,
 };
 
 export function loadSettings() {

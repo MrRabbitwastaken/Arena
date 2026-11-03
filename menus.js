@@ -76,6 +76,7 @@ export class Menus {
     bind('#s-gore', 'gore', (e) => e.value);
     bind('#s-shadows', 'shadows', (e) => e.value);
     bind('#s-res', 'resolution', (e) => +e.value);
+    bind('#s-bright', 'brightness', (e) => +e.value, 'input');
     bind('#s-vol', 'volume', (e) => +e.value, 'input');
     bind('#s-amb', 'ambience', (e) => +e.value, 'input');
     this.syncForm();
@@ -87,6 +88,7 @@ export class Menus {
     $('#s-invert').checked = s.invertY; $('#s-lock').checked = s.lockOn;
     $('#s-diff').value = String(s.difficulty); $('#s-gore').value = s.gore; $('#s-shadows').value = s.shadows;
     $('#s-res').value = String(s.resolution);
+    $('#s-bright').value = s.brightness; $('#s-bright').nextElementSibling.textContent = Math.round(s.brightness * 100) + '%';
     $('#s-vol').value = s.volume; $('#s-vol').nextElementSibling.textContent = Math.round(s.volume * 100) + '%';
     $('#s-amb').value = s.ambience; $('#s-amb').nextElementSibling.textContent = Math.round(s.ambience * 100) + '%';
   }

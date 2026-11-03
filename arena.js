@@ -9,7 +9,7 @@ function canvas(w, h) { const c = document.createElement('canvas'); c.width = w;
 // Worn sandstone flags, drawn so the texture tiles.
 function floorTexture() {
   const S = 1024, [c, g] = canvas(S, S);
-  g.fillStyle = '#3d3933'; g.fillRect(0, 0, S, S);
+  g.fillStyle = '#5a5248'; g.fillRect(0, 0, S, S);
   const rows = []; let tot = 0;
   while (tot < S) { const h = rand(110, 190); rows.push(h); tot += h; }
   const k = S / tot; let y = 0;
@@ -21,7 +21,7 @@ function floorTexture() {
       const cw = cw0 * kc;
       for (const ox of [-S, 0]) {
         const X = ((x % S) + S) % S + ox;
-        const l = 33 + rand(-6, 7), hue = 30 + rand(-6, 8);
+        const l = 50 + rand(-7, 7), hue = 32 + rand(-6, 8);
         g.fillStyle = `hsl(${hue},${rand(7, 13)}%,${l}%)`;
         g.fillRect(X + 3, y + 3, cw - 6, rh - 6);
         const grd = g.createRadialGradient(X + cw / 2, y + rh / 2, 4, X + cw / 2, y + rh / 2, Math.max(cw, rh) * 0.7);
@@ -49,12 +49,12 @@ function floorTexture() {
 
 function wallTexture() {
   const W = 1024, H = 512, [c, g] = canvas(W, H);
-  g.fillStyle = '#2a2622'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#3e3832'; g.fillRect(0, 0, W, H);
   const course = H / 6;
   for (let r = 0; r < 6; r++) {
     let x = r % 2 ? -rand(40, 120) : 0;
     while (x < W) {
-      const w = rand(110, 210), l = 26 + rand(-5, 6);
+      const w = rand(110, 210), l = 40 + rand(-6, 6);
       g.fillStyle = `hsl(${28 + rand(-5, 5)},${rand(6, 12)}%,${l}%)`;
       g.fillRect(x + 3, r * course + 3, w - 6, course - 6);
       for (let i = 0; i < 40; i++) {
@@ -97,7 +97,7 @@ export class Arena {
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), z = pos.getZ(i), r = Math.hypot(x, z) / ARENA_R;
       uv.setXY(i, x / 7.5, z / 7.5);
-      const v = 1 - Math.pow(Math.max(0, r - 0.55) / 0.45, 1.6) * 0.45 + rand(-0.03, 0.03);
+      const v = 1 - Math.pow(Math.max(0, r - 0.6) / 0.4, 1.6) * 0.25 + rand(-0.03, 0.03);
       col.push(v, v * 0.97, v * 0.93);
     }
     geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
@@ -198,7 +198,7 @@ export class Arena {
       const bowl = new THREE.Mesh(bowlGeo, iron); bowl.position.y = 0.98; bowl.castShadow = true; g.add(bowl);
       const coals = new THREE.Mesh(new THREE.CircleGeometry(0.36, 16), new THREE.MeshBasicMaterial({ color: 0xff7a2a }));
       coals.rotation.x = -Math.PI / 2; coals.position.y = 1.19; g.add(coals);
-      const light = new THREE.PointLight(0xff9a4a, 2.2, 15, 2);
+      const light = new THREE.PointLight(0xff9a4a, 3, 18, 2);
       light.position.y = 1.7; g.add(light);
       this.group.add(g);
       this.braziers.push({ g, light, ph: rand(0, 10), top: new THREE.Vector3(g.position.x, 1.25, g.position.z) });
@@ -212,7 +212,7 @@ export class Arena {
       vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
       fragmentShader: `varying vec3 vP; void main(){
         float h = clamp(vP.y, -0.1, 1.0);
-        vec3 horizon = vec3(0.42, 0.25, 0.16), mid = vec3(0.11, 0.1, 0.14), top = vec3(0.025, 0.03, 0.05);
+        vec3 horizon = vec3(0.75, 0.5, 0.34), mid = vec3(0.32, 0.3, 0.38), top = vec3(0.12, 0.14, 0.22);
         vec3 c = mix(horizon, mid, smoothstep(0.0, 0.25, h));
         c = mix(c, top, smoothstep(0.25, 0.9, h));
         gl_FragColor = vec4(c, 1.0); }`,
@@ -225,7 +225,7 @@ export class Arena {
     this.time += dt;
     for (const b of this.braziers) {
       const f = Math.sin(this.time * 9 + b.ph) * 0.18 + Math.sin(this.time * 23 + b.ph * 2) * 0.12 + Math.random() * 0.12;
-      b.light.intensity = 2.0 + f;
+      b.light.intensity = 2.8 + f;
       if (fx && Math.random() < 0.9) fx.fire(b.top);
     }
     for (const b of this.banners) {
